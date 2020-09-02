@@ -1,0 +1,20 @@
+{
+  "name": "todolist",
+  "version": "1.0.0",
+  "description": "todolist",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "dependencies": {
+      "express": "^4.17.11",
+      "node-cache": "^5.1.2",
+      "ejs": "^3.1.5"
+  },
+  "devDependencies": {
+      "nodemon": "^2.0.4"
+  },
+  "author": "SebastienCHONG",
+  "license": "ISC"
+}
