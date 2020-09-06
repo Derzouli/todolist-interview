@@ -2,16 +2,17 @@
 
 <html>
     <head>
-    <title> To Do List </title>
+    <title> LIST <%= listname %> </title>
     </head>
     <script src="/jquery-3.5.1.min.js"></script>
     <script src="/crud_method.js"></script>
     <body>
-    <h1>To Do List</h1>
+    <a href="/todo"> BACK TO ALL LIST</a>
+    <h1><%= listname %> list:</h1>
     <ul>
         <% Object.keys(todolist).forEach(function(prop) { %>
         <li style="list-style-type: none;">
-        <button onclick="delete_event('<%= prop %>')">DELETE</button> ID: <%=prop %> CONTENT: <%= todolist[prop] %>
+        <button onclick="delete_event('<%= prop %>', '<%= listname %>')">DELETE</button> ID/ <%= prop %>, CONTENT: <%= todolist[prop]["content"] %>, DONE: <%= todolist[prop]["done"] %> </br>
         </li>
         <% }); %>
     </ul>
@@ -22,7 +23,8 @@
     <form id="create_item_event" method="post">
     <p>
         <label for="create">Create new item:</label>
-	<input type="text" name="create_item" id="create_item" autofocus />
+	<input type="text" name="create_content" id="create_content" autofocus />
+	<input type="hidden" name="current_list" class="current_list" value="<%= listname %>" autofocus />
 	<input type="submit">
     </p>
     </form>
@@ -34,8 +36,11 @@
     <label for="update">Update item:<label></br>
     <label for="item_id">ID of item:<label>
     <input type="text" name="item_id" id="item_id" autofocus /></br></br>
-    <label for="item_content">content of item:<label>
-    <input type="text" name="item_content" id="item_content" autofocus /></br>
+    <label for="update_content">content of item:<label>
+    <input type="text" name="update_content" id="update_content" autofocus /></br>
+    <label for="update_done">Done:<label>
+    <input type="checkbox" name="update_done" id="update_done" value="false" autofocus /></br>
+    <input type="hidden" name="current_list" class="current_list" value="<%= listname %>" autofocus />
     <input type="submit">
     </p>
     </form>

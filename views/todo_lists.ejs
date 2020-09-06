@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+    <title> To Do List </title>
+    </head>
+    <script src="/jquery-3.5.1.min.js"></script>
+    <script src="/crud_method.js"></script>
+    <body>
+    <h1>All lists, click on a list to access on items</h1>
+    <ul>
+        <% Object.keys(lists).forEach(function(prop) { %>
+        <li style="list-style-type: none;">
+        <button onclick="delete_list_event('<%= lists[prop] %>')">DELETE</button> 
+        <a href="/todo/<%= lists[prop] %>"> <%=lists[prop] %> </a>
+        </li>
+        <% }); %>
+    </ul>
+    <h2 id="error_banner">
+
+    </h2>
+    <h1>Create List</h1>
+    <form id="create_list_event" method="post">
+    <p>
+        <label for="create">Create new list:</label>
+	<input type="text" name="list_name" id="list_name" autofocus />
+	<input type="submit">
+    </p>
+    <p> To create a list please fill it with alpha characters and press submit button</p>
+    </form>
+
+    </body>
+</html>

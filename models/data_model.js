@@ -1,8 +1,25 @@
-"use strict";
+"use strict"
 
 const nodecache = require('node-cache');
 const _ = require('lodash');
 const cache = new nodecache({checkperiod:0, sslTTL: 0});
+
+const { find_available_key_in_dict } = require('../tools/utils.js');
+
+function list_keys()
+{
+	return cache.keys();
+}
+
+function get_lists() {
+	let allLists = [];
+
+	allLists = cache.get('_lists');
+	if (allLists == undefined) {
+		allLists = [];
+	}
+	return allLists;
+}
 
 function flushAll() {
     cache.flushAll();
@@ -16,6 +33,42 @@ function getDict(key) {
         myDict = {};
     }
     return myDict;
+}
+
+function find_name() {
+	list.includes(name)
+}
+
+function create_list(name) {
+	let allLists = [];
+	
+	allLists = get_lists();
+	allLists.push(name);
+	allLists = setDict("_lists", allLists);
+	if (allLists && allLists !== undefined)
+	{
+		return setDict(name, {});
+	}
+	return false;
+}
+
+function delete_list(name) {
+	let allLists = [];
+	let entries_deleted = 0;
+	
+	allLists = get_lists();
+	const index = allLists.indexOf(name);
+	if (index > -1)
+	{
+		allLists.splice(index, 1);
+	}
+	entries_deleted = cache.del(name);
+	allLists = setDict("_lists", allLists);
+	if (allLists && allLists !== undefined)
+	{
+		return true;
+	}
+	return false;
 }
 
 /*
@@ -36,27 +89,6 @@ function setDict(key, value) {
     result = cache.set(key, value, 10000);
     return ((result === true) ? value : false);
 }
-
-/*
-** body:
-**      check if body has arguments content and done
-** obj can have one or multiple keys (content, done)or empty.
-*/
-function parse_item(body)
-{
-    let obj = {}
-
-    if (body.content && check_params_is_valid(body.content) !== false)
-    {
-        obj["content"] = body.content
-    }
-    if (typeof body.done !== 'undefined')
-    {
-        obj["done"] = body.done
-    }
-    return obj
-}
-
 /*
 ** myDict:
 **      object that has to be save in cache
@@ -64,12 +96,12 @@ function parse_item(body)
 ** id:
 **      item id that will be deleted
 */
-function delete_item(myDict, id)
+function delete_item(myDict, id, list_name)
 {
     let result = false;
 
     delete myDict[id];
-    result = setDict("list", myDict);
+    result = setDict(list_name, myDict);
     return result;
 }
 
@@ -92,7 +124,7 @@ function update_item(myDict, new_item, id)
     obj[id]["content"] = (new_item["content"] !== undefined) ? new_item["content"] : myDict[id]["content"];
     obj[id]["done"] = (new_item["done"] !== undefined) ? new_item["done"] : myDict[id]["done"];
     myDict[id] = obj[id];
-    result = setDict("list", myDict);
+    result = setDict(new_item["list"], myDict);
     if (result !== false)
     {
         return obj
@@ -135,7 +167,7 @@ function create_item(myDict, item_content, id)
         obj[id]["done"] = false
     }
     myDict = {...myDict, ...obj};
-    result = setDict("list", myDict);
+    result = setDict(item_content["list"], myDict);
     if (result !== false)
     {
         return id, obj
@@ -143,71 +175,14 @@ function create_item(myDict, item_content, id)
     return false;
 }
 
-function find_available_key_in_dict(myDict)
-{
-    for (let i = 0; i <= 100000; i++)
-    {
-        if (myDict.hasOwnProperty(i) === true)
-        {
-            continue
-        }
-        else
-        {
-            return i
-        }
-    }
-}
-
-function find_key_in_dict(myDict, key)
-{
-    if (myDict.hasOwnProperty(key) === true)
-    {
-        return key;
-    }
-    else
-    {
-        return false
-    }
-}
-
-function check_params_is_valid(param)
-{
-    if (typeof param == 'string' || param instanceof String)
-    {
-
-        if (param.length > 0)
-        {
-            return param
-        }
-    }
-    return false
-}
-
-function check_param_id(param)
-{
-    var test_number;
-    var sign;
-
-    test_number = Number(param);
-    if (test_number >= 100000)
-        return false
-    sign = Math.sign(test_number);
-    if (test_number != NaN && sign >= 0)
-    {
-        return param
-    }
-    return false
-}
-
 module.exports = { getDict,
                    setDict,
-                   find_available_key_in_dict,
-                   find_key_in_dict,
-                   check_params_is_valid,
-                   check_param_id,
                    flushAll,
+                   list_keys,
                    create_item,
                    update_item,
                    delete_item,
-                   parse_item
+                   create_list,
+                   delete_list,
+                   get_lists
                }
